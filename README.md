@@ -65,12 +65,21 @@ All models were optimized with `GridSearchCV`:
 ---
 
 ## How to Run
-
+### 1.  Clone the Repository
 ```bash
 git clone https://github.com/PietroMarvulli/Machine-Learning-Exam.git
+ ```
+### 2.  Set Up Virtual Environment
+```bash
 python -m venv .venv
 .\.venv\Scripts\activate
+ ```
+### 3. Install Requirements
+```bash
 pip install -r requirements.txt
+ ```
+### 4.  Run ```main.py```
+```bash
 python main.py
-
+ ```
 
