@@ -120,13 +120,11 @@ def save_features_plot(dataframe, save_path, pathology):
 def plot_conf_matrix(y_true, y_pred, model_name="model", save_path=None):
     cm = confusion_matrix(y_true, y_pred)
 
-    # Riordino come vuoi tu: TP in alto a sinistra
     cm_reordered = np.array([
         [cm[1, 1], cm[1, 0]],
         [cm[0, 1], cm[0, 0]]
     ])
 
-    # Costruisco la matrice colori: verde per corretto, rosso per errore
     color_matrix = np.array([
         [1, 0],
         [0, 1]
@@ -137,7 +135,6 @@ def plot_conf_matrix(y_true, y_pred, model_name="model", save_path=None):
     plt.figure(figsize=(6, 6))
     plt.pcolor(color_matrix, cmap=cmap, edgecolors='black', linewidths=2)
 
-    # Scrivo i testi dentro
     labels = np.array([
         [f"{cm_reordered[0, 0]}\n(True Positive)", f"{cm_reordered[0, 1]}\n(False Negative)"],
         [f"{cm_reordered[1, 0]}\n(False Positive)", f"{cm_reordered[1, 1]}\n(True Negative)"]
