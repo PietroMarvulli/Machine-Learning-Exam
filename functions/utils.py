@@ -24,6 +24,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.svm import LinearSVC
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.preprocessing import StandardScaler
+from matplotlib.colors import ListedColormap
 
 def tsne2D(data):
     classes = data["Outcome"]
@@ -115,66 +116,57 @@ def save_features_plot(dataframe, save_path, pathology):
             save_file = f"{save_path}/{feature}_{pathology}.png"
             plt.savefig(save_file)
 
+
 def plot_conf_matrix(y_true, y_pred, model_name="model", save_path=None):
-    disp = ConfusionMatrixDisplay.from_predictions(y_true, y_pred)
-    disp.ax_.set_title("Confusion Matrix")
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Riordino come vuoi tu: TP in alto a sinistra
+    cm_reordered = np.array([
+        [cm[1, 1], cm[1, 0]],
+        [cm[0, 1], cm[0, 0]]
+    ])
+
+    # Costruisco la matrice colori: verde per corretto, rosso per errore
+    color_matrix = np.array([
+        [1, 0],
+        [0, 1]
+    ])
+
+    cmap = ListedColormap(["red", "green"])
+
+    plt.figure(figsize=(6, 6))
+    plt.pcolor(color_matrix, cmap=cmap, edgecolors='black', linewidths=2)
+
+    # Scrivo i testi dentro
+    labels = np.array([
+        [f"{cm_reordered[0, 0]}\n(True Positive)", f"{cm_reordered[0, 1]}\n(False Negative)"],
+        [f"{cm_reordered[1, 0]}\n(False Positive)", f"{cm_reordered[1, 1]}\n(True Negative)"]
+    ])
+
+    for i in range(2):
+        for j in range(2):
+            plt.text(j + 0.5, i + 0.5, labels[i, j],
+                     horizontalalignment='center',
+                     verticalalignment='center',
+                     fontsize=16, color='white', weight='bold')
+
+    plt.xticks([0.5, 1.5], ['True', 'False'], fontsize=12)
+    plt.yticks([0.5, 1.5], ['True', 'False'], fontsize=12)
+    plt.xlabel("Predicted Values", fontsize=14)
+    plt.ylabel("Actual Values", fontsize=14)
+    plt.title("Confusion Matrix", fontsize=16)
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+
     if save_path:
-        plt.savefig(os.path.join(save_path, f"{model_name}_conf_matrix.png"))
+        plt.savefig(os.path.join(save_path, f"{model_name}_custom_conf_matrix.png"))
+    plt.show()
 
 def plot_roc_curve(y_true, y_scores, model_name="model", save_path=None):
     RocCurveDisplay.from_predictions(y_true, y_scores)
     plt.title("ROC Curve")
     if save_path:
         plt.savefig(os.path.join(save_path, f"{model_name}_roc.png"))
-
-# def plot_roc_curve_LR(model, save_path=None):
-#     plt.figure(figsize=(8, 8))
-#     plt.plot(model.summary.roc.select('FPR').collect(), model.summary.roc.select('TPR').collect(),
-#              color='navy', lw=2)
-#     plt.plot([0, 1], [0, 1], color='red', lw=1, linestyle='--')
-#     plt.xlabel('False Positive Rate')
-#     plt.ylabel('True Positive Rate')
-#     plt.title('Receiver Operating Characteristic (ROC) Curve')
-#     if save_path:
-#         image_name = "LR_ROC.png"
-#         save_path_with_name = os.path.join(save_path, image_name)
-#         plt.savefig(save_path_with_name, bbox_inches='tight')
-#
-# def plot_roc_curve_DT(predict_test, save_path=None):
-#     rpred = np.array([float(row['rawPrediction'][1]) for row in predict_test.collect()])
-#     label = np.array([int(row['Outcome']) for row in predict_test.collect()])
-#
-#     fpr, tpr, thrs = roc_curve(label, rpred)
-#     plt.figure(figsize=(8, 8))
-#     plt.plot(fpr, tpr,
-#              color='navy', lw=2)
-#     plt.plot([0, 1], [0, 1], color='red', lw=1, linestyle='--')
-#     plt.xlabel('False Positive Rate')
-#     plt.ylabel('True Positive Rate')
-#     plt.title('Receiver Operating Characteristic (ROC) Curve')
-#     if save_path:
-#         image_name = "DT_ROC.png"
-#         save_path_with_name = os.path.join(save_path, image_name)
-#         plt.savefig(save_path_with_name, bbox_inches='tight')
-#
-# def plot_roc_curve_SVM(predict_test, save_path=None):
-#     rpred = predict_test.select("rawPrediction").collect()
-#     label = predict_test.select("Outcome").collect()
-#     rpred = np.array(rpred).reshape(-1, 2)  # Use -1 for unknown size in one dimension
-#     label = np.array(label)
-#
-#     fpr, tpr, thrs = roc_curve(label, rpred[:, 1])
-#     plt.figure(figsize=(8, 8))
-#     plt.plot(fpr, tpr, color='navy', lw=2)
-#     plt.plot([0, 1], [0, 1], color='red', lw=1, linestyle='--')
-#     plt.xlabel('False Positive Rate')
-#     plt.ylabel('True Positive Rate')
-#     plt.title('Receiver Operating Characteristic (ROC) Curve')
-#     if save_path:
-#         image_name = "SVM_ROC.png"
-#         save_path_with_name = os.path.join(save_path, image_name)
-#         plt.savefig(save_path_with_name, bbox_inches='tight')
-
 
 def feature_processing(dataframe):
     dataframe = dataframe.copy()
