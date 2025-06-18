@@ -58,9 +58,9 @@ All models were optimized with `GridSearchCV`:
 
 | Model               | AUC  | Precision | Recall | F1-score |
 |--------------------|------|-----------|--------|----------|
-| Logistic Regression| 0.84 |   0.75    |  0.75  |   0.77   |
-| Decision Tree      | 0.57 |   0.82    |  0.81  |   0.81   |
-| SVM                | 0.84 | **0.77**  | **0.77** | **0.77** |
+| Logistic Regression| 0.83 |  0.69   |   0.59 |   0.64   |
+| Decision Tree      |0.76 |   0.61  |  0.70 |  0.65   |
+| SVM                | 0.83 |  0.72 | 0.59 | 0.65 |
 
 ---
 
