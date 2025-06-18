@@ -241,7 +241,7 @@ def performance_evaluation(y_train_true, y_train_pred, y_train_proba,
     print(metrics_df)
     return metrics_df
 
-def logistic_regression(train, test):
+def logistic_regression(train, test, save_fig=False):
     X_train = train.drop(columns='Outcome')
     y_train = train['Outcome']
     X_test = test.drop(columns='Outcome')
@@ -256,11 +256,21 @@ def logistic_regression(train, test):
     clf = GridSearchCV(LogisticRegression(max_iter=1000), param_grid, cv=5)
     clf.fit(X_train, y_train)
 
-    y_pred = clf.predict(X_test)
-    print("Logistic Regression")
-    print(classification_report(y_test, y_pred))
+    y_train_pred = clf.predict(X_train)
+    y_test_pred = clf.predict(X_test)
+    y_train_proba = clf.predict_proba(X_train)[:, 1]
+    y_test_proba = clf.predict_proba(X_test)[:, 1]
 
-    return classification_report(y_test, y_pred, output_dict=True)
+    print("Logistic Regression")
+    metrics_df = performance_evaluation(y_train, y_train_pred, y_train_proba,
+                                        y_test, y_test_pred, y_test_proba)
+
+    if save_fig:
+        plot_roc_curve(y_test, y_test_proba, model_name="LR", save_path=output_folder)
+        plot_conf_matrix(y_test, y_test_pred, model_name="LR", save_path=output_folder)
+
+    return metrics_df
+
 
 
 def decision_tree(train, test, save_fig=False):

@@ -50,6 +50,6 @@ from sklearn.model_selection import train_test_split
 train, test = train_test_split(data, test_size=0.2, random_state=42)
 
 
-metrics_lr = logistic_regression(train, test)
+metrics_lr = logistic_regression(train, test, True)
 metrics_dt = decision_tree(train, test, True)
 metrics_svm = support_vector_machine(train, test, True)
